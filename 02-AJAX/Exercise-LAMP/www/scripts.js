@@ -2,11 +2,10 @@
 
     Whole Spectrum Energy Solutions
     Author: Evelyn Duarte
-    Date:  09/12/19 
+    Date:   9/16/19
 
     Filename: script.js
 */
-
 "use strict";
 
 // global variables
@@ -15,16 +14,16 @@ var weatherReport;
 var httpRequest = false;
 
 function getRequestObject() {
-   // alert('to annoy');
+   // alert("getRequestObject()");
    try {
-      httpRequest = new XMLHttpRequest(); 
-   }
-   catch (requestError) {
-       document.querySelector("p.error").innerHTML = "Forecast not supported by your browser.";
-       document.querySelector("p.error").style.display = "block";
-       return false;
+      httpRequest = new XMLHttpRequest();
+   } catch (requestError) {
+      document.querySelector("p.error").innerHTML = "Forecast not supported by your browser.";
+      document.querySelector("p.error").style.display = "block";
+      return false;
    }
    return httpRequest;
+
 }
 
 function getWeather(evt) {
@@ -47,31 +46,46 @@ function getWeather(evt) {
       latitude = 45.5601062;
       longitude = -73.7120832;
    }
+
    if (!httpRequest) {
-      httpRequest = getRequestObject()
-   };
+      httpRequest = getRequestObject();
+   }
+
    httpRequest.abort();
-   httpRequest.open("get", "solar.php?" + "lat=" + latitude + "&lng" + longitude, true);
+   httpRequest.open("get", "solar.php?" + "lat=" + latitude + "&lng=" + longitude, true);
    httpRequest.send(null);
    httpRequest.onreadystatechange = fillWeather;
-}
-function fillWeather(){
-   if (httpRequest.readyState === 4 &&
-      httpRequest.status === 200) {
-     weatherReport = JSON.parse(httpRequest.responseText);
-   }
+
 }
 
-var locations = document.querySelectorAll("section ul li");
-for (var i = 0; i < locations.length; i++) {
-   if (locations[i].addEventListener) {
-      locations[i].addEventListener("click", getWeather, false);
-   } else if (locations[i].attachEvent) {
-      locations[i].attachEvent("onclick", getWeather);
-   }
-}
-if (window.addEventListener) {
-   window.addEventListener("load", getWeather, false);
-} else if (window.attachEvent) {
-   window.attachEvent("onload", getWeather);
-}
+function fillWeather() {
+
+   if (httpRequest.readyState === 4 &&
+      httpRequest.status === 200) {
+      weatherReport = JSON.parse(httpRequest.responseText);
+
+      var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      var dateValue = new Date(weatherReport.daily.data[0].time);
+      var dayOfWeek = dateValue.getDay();
+      var rows = document.querySelectorAll("section.week table tbody tr");
+      document.querySelector("section.week table caption").innerHTML = selectedCity;
+
+      document.querySelector("section.week table caption ").style.display = "block ";
+         document.querySelector("section.week table ").style.display = "inline - block ";
+         }
+      }
+
+      var locations = document.querySelectorAll("section ul li");
+
+      for (var i = 0; i < locations.length; i++) {
+         if (locations[i].addEventListener) {
+            locations[i].addEventListener("click", getWeather, false);
+         } else if (locations[i].attachEvent) {
+            locations[i].attachEvent("onclick", getWeather);
+         }
+      }
+      if (window.addEventListener) {
+         window.addEventListener("load", getWeather, false);
+      } else if (window.attachEvent) {
+         window.attachEvent("onload", getWeather);
+      }
